@@ -18,7 +18,18 @@ bool output[10000][505];
 int f[505];
 int n, m;
 bool isLoop;
-map<string, int> gt = {{"NOT", 1}, {"AND", 2}, {"OR", 3}, {"XOR", 4}, {"NAND", 5}, {"NOR", 6}};
+map<string, int> gt;
+
+int stringToI(string s)
+{
+    int ans = 0;
+    for (int i = 0; i < s.length(); i++)
+    {
+        ans *= 10;
+        ans += s[i] - '0';
+    }
+    return ans;
+}
 
 void init()
 {
@@ -52,9 +63,12 @@ void inputString(Gate &g, int i)
     istringstream iss(line);
     iss >> g.type;
     string temp;
-    while (iss >> temp)
+    int num;
+    iss >> num;
+    while (num--)
     {
-        int out = stoi(temp.substr(1));
+        iss >> temp;
+        int out = stringToI(temp.substr(1));
         if (temp[0] == 'I')
         {
             g.inputs.push_back(out);
@@ -70,13 +84,19 @@ void inputString(Gate &g, int i)
 int main()
 {
     ios::sync_with_stdio(false);
+    gt["NOT"] = 1;
+    gt["NAD"] = 2;
+    gt["OR"] = 3;
+    gt["XOR"] = 4;
+    gt["NAND"] = 5;
+    gt["NOR"] = 6;
     int Q;
     cin >> Q;
     while (Q--)
     {
-        init();
         isLoop = false;
         cin >> m >> n;
+        init();
         cin.get();
         for (int i = 1; i <= n; i++)
         {
@@ -102,7 +122,7 @@ int main()
         {
             for (int i = 1; i <= m; i++)
             {
-                cin >> input[s][i];
+                cin >> input[k][i];
             }
         }
         for (int k = 0; k < s; k++)
@@ -110,67 +130,80 @@ int main()
             bool flag = false;
             do
             {
+                flag = false;
                 for (int i = 1; i <= n; i++)
                 {
-                    int old = output[s][i];
+                    int old = output[k][i];
                     int a = 0;
                     bool temp;
                     int loc;
                     switch (gt[gates[i].type])
                     {
                     case 1:
+                    {
                         loc = gates[i].inputs[0];
-                        output[s][i] = loc > 0 ? !input[s][loc] : !output[s][-loc];
+                        output[k][i] = loc > 0 ? !input[k][loc] : !output[k][-loc];
                         break;
+                    }
                     case 2:
+                    {
                         temp = true;
-                        while (a < gates[i].inputs.size())
+                        for (int j = 0; j < gates[i].inputs.size(); j++)
                         {
-                            loc = gates[i].inputs[a];
-                            temp &= loc > 0 ? !input[s][loc] : !output[s][-loc];
+                            loc = gates[i].inputs[j];
+                            temp &= loc > 0 ? input[k][loc] : output[k][-loc];
                         }
-                        output[s][i] = temp;
+                        output[k][i] = temp;
                         break;
+                    }
                     case 3:
+                    {
                         temp = false;
-                        while (a < gates[i].inputs.size())
+                        for (int j = 0; j < gates[i].inputs.size(); j++)
                         {
-                            loc = gates[i].inputs[a];
-                            temp |= loc > 0 ? !input[s][loc] : !output[s][-loc];
+                            loc = gates[i].inputs[j];
+                            temp |= loc > 0 ? input[k][loc] : output[k][-loc];
                         }
-                        output[s][i] = temp;
+                        output[k][i] = temp;
                         break;
+                    }
                     case 4:
+                    {
                         temp = false;
-                        while (a < gates[i].inputs.size())
+                        for (int j = 0; j < gates[i].inputs.size(); j++)
                         {
-                            loc = gates[i].inputs[a];
-                            temp ^= loc > 0 ? !input[s][loc] : !output[s][-loc];
+                            loc = gates[i].inputs[j];
+                            temp ^= loc > 0 ? input[k][loc] : output[k][-loc];
                         }
-                        output[s][i] = temp;
+                        output[k][i] = temp;
                         break;
+                    }
                     case 5:
+                    {
                         temp = true;
-                        while (a < gates[i].inputs.size())
+                        for (int j = 0; j < gates[i].inputs.size(); j++)
                         {
-                            loc = gates[i].inputs[a];
-                            temp &= loc > 0 ? !input[s][loc] : !output[s][-loc];
+                            loc = gates[i].inputs[j];
+                            temp &= loc > 0 ? input[k][loc] : output[k][-loc];
                         }
-                        output[s][i] = !temp;
+                        output[k][i] = !temp;
                         break;
+                    }
                     case 6:
+                    {
                         temp = false;
-                        while (a < gates[i].inputs.size())
+                        for (int j = 0; j < gates[i].inputs.size(); j++)
                         {
-                            loc = gates[i].inputs[a];
-                            temp |= loc > 0 ? !input[s][loc] : !output[s][-loc];
+                            loc = gates[i].inputs[j];
+                            temp |= loc > 0 ? input[k][loc] : output[k][-loc];
                         }
-                        output[s][i] = !temp;
+                        output[k][i] = !temp;
                         break;
+                    }
                     default:
                         break;
                     }
-                    if (old != output[s][i])
+                    if (old != output[k][i])
                         flag = true;
                 }
             } while (flag);
@@ -180,7 +213,7 @@ int main()
             {
                 int check;
                 cin >> check;
-                cout << (output[s][check] ? 1 : 0) << " ";
+                cout << (output[k][check] ? 1 : 0) << " ";
             }
             cout << endl;
         }
