@@ -13,11 +13,10 @@ struct Gate
 };
 
 Gate gates[505];
-bool input[10000][2505];
-bool output[10000][505];
-int f[505];
+bool input[10005][2505];
+bool output[10005][505];
+bool visited[505];
 int n, m;
-bool isLoop;
 map<string, int> gt;
 
 int stringToI(string s)
@@ -31,36 +30,13 @@ int stringToI(string s)
     return ans;
 }
 
-void init()
-{
-    for (int i = 1; i <= n; i++)
-    {
-        f[i] = i;
-    }
-}
-
-int find(int x)
-{
-    return f[x] == x ? f[x] : f[x] = find(f[x]);
-}
-
-void merge(int x, int y)
-{
-    int fx = find(x);
-    int fy = find(y);
-    if (fx != fy)
-    {
-        f[fx] = fy;
-    }
-    else
-        isLoop = true;
-}
-
-void inputString(Gate &g, int i)
+void inputString(Gate &g)
 {
     string line;
     getline(cin, line);
     istringstream iss(line);
+    g.inputs.clear();
+    g.type.clear();
     iss >> g.type;
     string temp;
     int num;
@@ -76,7 +52,6 @@ void inputString(Gate &g, int i)
         else
         {
             g.inputs.push_back(-out);
-            merge(i, out);
         }
     }
 }
@@ -85,7 +60,7 @@ int main()
 {
     ios::sync_with_stdio(false);
     gt["NOT"] = 1;
-    gt["NAD"] = 2;
+    gt["AND"] = 2;
     gt["OR"] = 3;
     gt["XOR"] = 4;
     gt["NAND"] = 5;
@@ -94,27 +69,11 @@ int main()
     cin >> Q;
     while (Q--)
     {
-        isLoop = false;
         cin >> m >> n;
-        init();
         cin.get();
         for (int i = 1; i <= n; i++)
         {
-            inputString(gates[i], i);
-        }
-        if (isLoop)
-        {
-            cout << "LOOP" << endl;
-            int s;
-            cin >> s;
-            s += s;
-            cin.get();
-            string trash;
-            while (s--)
-            {
-                getline(cin, trash);
-            }
-            continue;
+            inputString(gates[i]);
         }
         int s;
         cin >> s;
@@ -127,14 +86,18 @@ int main()
         }
         for (int k = 0; k < s; k++)
         {
+            for (int i = 0; i < 505; i++)
+            {
+                visited[i] = false;
+            }
             bool flag = false;
+            bool isLoop = false;
             do
             {
                 flag = false;
                 for (int i = 1; i <= n; i++)
                 {
                     int old = output[k][i];
-                    int a = 0;
                     bool temp;
                     int loc;
                     switch (gt[gates[i].type])
@@ -203,10 +166,26 @@ int main()
                     default:
                         break;
                     }
-                    if (old != output[k][i])
+                    if (old != output[k][i] && !visited[i])
+                    {
                         flag = true;
+                        visited[i] = true;
+                    }
+                    else if (old != output[k][i] && visited[i])
+                        isLoop = true;
                 }
-            } while (flag);
+            } while (flag && !isLoop);
+            if (isLoop)
+            {
+                cout << "LOOP" << endl;
+                cin.get();
+                string trash;
+                for (int i = 0; i < s; i++)
+                {
+                    getline(cin, trash);
+                }
+                break;
+            }
             int si;
             cin >> si;
             for (int i = 0; i < si; i++)
