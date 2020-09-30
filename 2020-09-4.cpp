@@ -4,7 +4,6 @@
 
 using namespace std;
 
-bool onEdge[2005];
 int points[2005][105];
 double dist[2005][2005];
 int bh[105];
@@ -59,8 +58,6 @@ int main()
         {
             cin >> points[i][j];
         }
-        if (fabs(euDist(points[i], bh) - r) < 1e-7)
-            onEdge[i] = true;
     }
     for (int i = 0; i < m; i++)
     {
