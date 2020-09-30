@@ -21,7 +21,7 @@ double euDist(int (&a)[105], int (&b)[105])
     return sqrt(ans);
 }
 
-double distance(int i, int j)
+double getDist(int i, int j)
 {
     if (i == j)
         return 0;
@@ -64,9 +64,9 @@ int main()
     }
     for (int i = 0; i < m; i++)
     {
-        for (int j = 0; j < m; j++)
+        for (int j = i; j < m; j++)
         {
-            dist[i][j] = dist[j][i] = distance(i, j);
+            dist[i][j] = dist[j][i] = getDist(i, j);
         }
     }
     for (int i = 0; i < m; i++)
