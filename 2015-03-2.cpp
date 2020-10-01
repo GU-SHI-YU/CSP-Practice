@@ -15,7 +15,6 @@ int main()
         int temp;
         cin >> temp;
         a[temp]++;
-        1
     };
     while (true)
     {
